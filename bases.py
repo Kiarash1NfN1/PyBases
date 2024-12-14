@@ -1,8 +1,7 @@
-# MIT Copyright @Kiarash1NfN1, 2024
+# MIT Copyright @Kiarash1NfN1, 2024 
 
-## TODO: decode from float
 ## TODO: color option with --c, base with -b 62 or 36, different bases from -b 10 to 62, 
-## TODO: test.py, make it pretty, add float with --f, letters instead of numbers for decimal with --l,
+## TODO: test.py, make it pretty, letters instead of numbers for decimal with --l,
 ## TODO: help with --h
 ## TODO: add proper comments and documentations
 ## TODO: release on pip, return strs into exceptions
@@ -20,6 +19,14 @@ def abs(number: int | float) -> int | float:
         return -number
     return number
 
+def IsValidNum(inp: str) -> bool:
+    for j in inp:
+        if j == '.' or j == '-':
+            continue
+        if j.lower() not in (nums + lettersLowerCase):
+            return False
+    return True
+
 def ReverseString(inp: str) -> str:
     length: int = len(inp)
     st: str = ""
@@ -27,7 +34,7 @@ def ReverseString(inp: str) -> str:
         st += inp[length - i - 1]
     return st
 
-def ConvertToBase(_num: int, base: int) -> str:
+def IntToBase(_num: int, base: int) -> str:
     if (10 <= base <= 62) == False:
         raise Exception("invalid number")
     if _num == 0:
@@ -70,8 +77,8 @@ def Base10ToBase(_num: str, base: int, lettersForDecimal: bool = False) -> str:
         num: float = abs(float(_num))
         numStr: str = str(num)
         if len(numStr.split('.')) <=  1:
-            return ConvertToBase(int(_num), base)
-        _integer: str = ConvertToBase(int(numStr.split('.')[0]), base)
+            return IntToBase(int(_num), base)
+        _integer: str = IntToBase(int(numStr.split('.')[0]), base)
         decimalSplit: str = numStr.split('.')[1]
         decimalStr: str = ""
         if lettersForDecimal:
@@ -83,20 +90,15 @@ def Base10ToBase(_num: str, base: int, lettersForDecimal: bool = False) -> str:
             return (-1.0) * (_integer + "." + decimalStr)
         return _integer + "." + decimalStr
     else:
-        return ConvertToBase(int(_num), base)
-    
-def decodeFromBase(_inp: str, base: int) -> int:
-    pattern = r"[\w.]+"
-    if bool(re.fullmatch(pattern, _inp)) == False or _inp.count('.') > 1:
-        raise Exception("invalid number")
-    if (10 <= base <= 62) == False:
-        raise Exception("invalid base")
+        return IntToBase(int(_num), base)
+
+def decodeFromInt(_inp: str, base: int) -> int:
     isNegative: bool = _inp[0] == '-'
     inp: str = ReverseString(_inp)
     if isNegative:
         inp = ReverseString(_inp[1:])
-    __L: list[str] = nums + lettersHigherCase + lettersLowerCase
-    L: list[str] = __L[:base]
+    _L: list[str] = nums + lettersHigherCase + lettersHigherCase
+    L: list[str] = _L[:base]
     num: int = 0
     for ch in range(len(inp)):
         if inp[ch] not in L:
@@ -106,3 +108,55 @@ def decodeFromBase(_inp: str, base: int) -> int:
     if isNegative:
         num *= -1
     return num
+
+def decodeFromBase(_inp: str, base: int) -> int | float:
+    if ('.' not in _inp) or (len(_inp.split('.')) <= 1):
+        result = decodeFromInt(ReverseString(_inp), base)
+        if result != "Invalid character":
+            return float(result)
+        return result
+    isNegative: bool = _inp[0] == '-'
+    integer: int
+    if isNegative:
+        integer = decodeFromInt(ReverseString(_inp.split('.')[0][1:]), base)
+    else:
+        integer = decodeFromInt(ReverseString(_inp.split('.')[0]), base)
+    if integer == "Invalid character":
+        return "Invalid character"
+    decimal: str = _inp.split('.')[1]
+    hasAnyLetters: bool = False
+    _inpLower: str = _inp.lower()
+    for c in lettersLowerCase:
+        if c in _inpLower:
+            hasAnyLetters = True
+            break
+    if hasAnyLetters == False:
+        if isNegative:
+            return (-1.0) * (float(abs(integer)) + float('0.' + decimal))
+        return float(integer) + float('0.' + decimal)
+    decimalStr: str = "0."
+    indx: int = 0
+    for j in decimal:
+        if j in nums:
+            decimalStr += j
+            continue
+        if lettersLowerCase.index(j.lower()) > 9:
+            raise Exception('invalid decimal on decimal part character: ' + str(indx))
+        decimalStr += str(lettersLowerCase.index(j.lower()))
+        indx += 1
+    if isNegative:
+        # Why doesn't python have condition operator? so stupid lol
+        return (-1.0) * (float(integer) + float(decimalStr))
+    return float(integer) + float(decimalStr)
+
+#print(decodeFromBase('-1.2', 36))
+#print(decodeFromBase('-10', 36) + 80)
+#print(decodeFromBase('-10.3', 36))
+#print(decodeFromBase('-1A.B', 36))
+while True:
+    # _Input = input("enter to encode: ")
+    # print(Base10ToBase(_Input, 36, True))
+    # print(Base10ToBase(_Input, 36, False))
+
+    _Input = input("enter to decode: ")
+    print(decodeFromBase(_Input, 36))
