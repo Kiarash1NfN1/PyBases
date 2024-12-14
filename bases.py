@@ -1,6 +1,5 @@
 # MIT Copyright @Kiarash1NfN1, 2024 
 
-## TODO: letters instead of numbers for decimal with --l,
 ## TODO: add proper comments and documentations
 ## TODO: release on pip, return strs into exceptions
 
@@ -151,7 +150,7 @@ def decodeFromBase(_inp: str, base: int) -> int | float:
 #print(decodeFromBase('-10', 36) + 80)
 #print(decodeFromBase('-10.3', 36))
 #print(decodeFromBase('-1A.B', 36))
-while True:
+while False:
     # _Input = input("enter to encode: ")
     # print(Base10ToBase(_Input, 36, True))
     # print(Base10ToBase(_Input, 36, False))

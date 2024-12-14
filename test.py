@@ -1,6 +1,16 @@
 import getopt, sys
+from bases import decodeFromBase, Base10ToBase
 
 argumentList = sys.argv[1:]
+
+colorized: bool = False
+letterDecimal: bool = False
+specifiedNum: bool = False
+specifiedBase: bool = False
+Base: int = 36
+decode: bool = False
+encode: bool = False
+_num: str = "NaN"
 
 def Print(message: str) -> None:
     if colorized:
@@ -42,7 +52,11 @@ def Print(message: str) -> None:
             indx += 1
         print(st)
         return
-    print(message)
+    st: str = ""
+    for q in message:
+        if q != '!' and q != '%':
+            st += q
+    print(st)
 
 long_options = ["help", "decode", "encode", "lettersdecimal", "colored"]
 
@@ -87,13 +101,6 @@ class bcolors:
 
 options = "hdenblc:"
 
-colorized: bool = False
-letterDecimal: bool = False
-specifiedNum: bool = False
-Base: int = 36
-decode: bool = False
-encode: bool = False
-_num: str = "NaN"
 
 
 
@@ -117,30 +124,55 @@ try:
         if currentArgument in ("-b", "--base"):
             Base = int(argumentList[argumentList.index(currentArgument) + 1])
             if (10 <= Base <= 62) == False:
-                Print("Not a valid base! Base should be between 10 and 62")
-                exit(0)
+                Print("ERROR: %The base should be between 10 and 62%.")
+                exit(1)
         if currentArgument in ("-n", "--number"):
             specifiedNum = True
             _num = argumentList[argumentList.index(currentArgument) + 1]
     if '-b' in argumentList:
+        specifiedBase = True
         Base = argumentList[argumentList.index('-b')+1]
     if '--base' in argumentList:
+        specifiedBase = True
         Base = argumentList[argumentList.index('--base')+1]
     if '-n' in argumentList:
+        specifiedNum = True
         _num = argumentList[argumentList.index('-n')+1]
     if '--number' in argumentList:
+        specifiedNum = True
         _num = argumentList[argumentList.index('--number')+1]
 except getopt.error as err:
     print (str(err))
     exit(0)
 
-print(f"result: c_{colorized}, letter_{letterDecimal}, speci_{specifiedNum}, b_{Base}, dCode_{decode}, eCode: {encode}, num: {_num}")
-# colorized: bool = False
-# letterDecimal: bool = False
-# specifiedNum: bool = False
-# Base: int = 36
-# decode: bool = False
-# encode: bool = False
-# _num: str = "NaN"
+#print(f"result: c_{colorized}, letter_{letterDecimal}, speci_{specifiedNum}, b_{Base}, dCode_{decode}, eCode: {encode}, num: {_num}")
 
-#base -b [n], letter decimal --l, help --h, num -n (loop if not), ! break,
+if (decode == True and encode == True) or (decode == False and encode == False):
+    Print("%error:% one of the options '-d' and '-e' should be used.")
+    exit(1)
+
+if (10 <= Base <= 62) == False:
+    Print("ERROR: %The base should be between 10 and 62%.")
+    exit(1)
+
+if specifiedBase == False:
+    Print("No base given. %Using base 36 as default%.")
+
+if specifiedNum:
+    if decode:
+        Print(decodeFromBase(_num, Base))
+    else:
+        Print(Base10ToBase(_num, Base, letterDecimal))
+    exit(0)
+
+Print("!Enter your number to convert. Use exclamation mark to exit.!")
+while True:
+    _INP = input()
+    if '!' in _INP:
+        exit(0)
+    if decode:
+        Print(str(decodeFromBase(_INP, Base)))
+    else:
+        Print(Base10ToBase(_INP, Base, letterDecimal))
+
+## TODO: change args in general
