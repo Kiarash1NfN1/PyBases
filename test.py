@@ -6,6 +6,8 @@ options = "hmo:"
 
 long_options = ["Help", "My_file", "Output="]
 
+colorized: bool = False
+
 try:
     arguments, values = getopt.getopt(argumentList, options, long_options)
     
