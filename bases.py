@@ -1,8 +1,6 @@
 # MIT Copyright @Kiarash1NfN1, 2024 
 
-## TODO: color option with --c, base with -b 62 or 36, different bases from -b 10 to 62, 
-## TODO: test.py, make it pretty, letters instead of numbers for decimal with --l,
-## TODO: help with --h
+## TODO: letters instead of numbers for decimal with --l,
 ## TODO: add proper comments and documentations
 ## TODO: release on pip, return strs into exceptions
 
